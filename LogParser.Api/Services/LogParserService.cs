@@ -5,8 +5,7 @@ namespace LogParser.Api.Services
 {
     public sealed class LogParserService : ILogParserService
     {
-        private static readonly Regex LogRegex =
-            new(@"^(?<ip>\S+).+?""\w+\s+(?<url>\S+)",  RegexOptions.Compiled);
+        private static readonly Regex LogRegex = new(@"^(?<ip>\S+).+?""\w+\s+(?<url>\S+)",  RegexOptions.Compiled);
 
         public LogAnalysisResult Analyze(IEnumerable<string> logLines)
         {
