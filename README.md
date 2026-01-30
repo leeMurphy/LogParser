@@ -59,7 +59,7 @@ Example response:
 
 * The log file format is **consistent and known**
 * Only IP address and URL are required from each log entry
-* Files are of reasonable size (current implementation reads into memory)
+* Files are of reasonable size
 * Supporting multiple log formats is out of scope
 
 ---
