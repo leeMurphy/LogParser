@@ -4,6 +4,6 @@ namespace LogParser.Api.Services
 {
     public interface ILogParserService
     {
-        LogAnalysisResult Analyze(IEnumerable<string> logLines);
+        Task<LogAnalysisResult> Analyze(IEnumerable<string> logLines, CancellationToken cancellationToken = default);
     }
 }

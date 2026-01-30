@@ -12,7 +12,7 @@ namespace LogParser.Api.Data
             this.parser = parser;
         }
 
-        public async Task<LogAnalysisResult> AnalyzeAsync(IFormFile file)
+        public async Task<LogAnalysisResult> AnalyzeAsync(IFormFile file, CancellationToken cancellationToken = default)
         {
             if (file.Length == 0)
                 return new LogAnalysisResult();
@@ -22,10 +22,11 @@ namespace LogParser.Api.Data
             using var reader = new StreamReader(file.OpenReadStream());
             while (!reader.EndOfStream)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 lines.Add(await reader.ReadLineAsync() ?? string.Empty);
             }
 
-            return parser.Analyze(lines);
+            return await parser.Analyze(lines, cancellationToken);
         }
     }
 }

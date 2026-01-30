@@ -7,13 +7,15 @@ namespace LogParser.Api.Services
     {
         private static readonly Regex LogRegex = new(@"^(?<ip>\S+).+?""\w+\s+(?<url>\S+)",  RegexOptions.Compiled);
 
-        public LogAnalysisResult Analyze(IEnumerable<string> logLines)
+        public Task<LogAnalysisResult> Analyze(IEnumerable<string> logLines, CancellationToken cancellationToken = default)
         {
             var ipCounts = new Dictionary<string, int>();
             var urlCounts = new Dictionary<string, int>();
 
             foreach (var line in logLines)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
 
@@ -24,11 +26,13 @@ namespace LogParser.Api.Services
                 var ip = match.Groups["ip"].Value;
                 var url = match.Groups["url"].Value;
 
+                cancellationToken.ThrowIfCancellationRequested();
+
                 ipCounts[ip] = ipCounts.GetValueOrDefault(ip) + 1;
                 urlCounts[url] = urlCounts.GetValueOrDefault(url) + 1;
             }
 
-            return new LogAnalysisResult
+            var result = new LogAnalysisResult
             {
                 UniqueIpCount = ipCounts.Count,
                 TopUrls = urlCounts
@@ -42,6 +46,8 @@ namespace LogParser.Api.Services
                     .Select(x => x.Key)
                     .ToList()
             };
+
+            return Task.FromResult(result);
         }
     }
 }

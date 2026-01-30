@@ -7,14 +7,14 @@ namespace LogParser.Api
     {
         public static void MapLogAnalysisEndpoints(this WebApplication app)
         {
-            app.MapPost("/analyze", async (IFormFile file, ILogAnalysisRepository repo) =>
+            app.MapPost("/analyze", async (IFormFile file, ILogAnalysisRepository repo, CancellationToken cancellationToken) =>
             {
                 if (file is null)
                     return Results.BadRequest("File is required");
                 if (file.Length == 0)
                     return Results.BadRequest("File is empty");
 
-                var result = await repo.AnalyzeAsync(file);
+                var result = await repo.AnalyzeAsync(file, cancellationToken);
                 return Results.Ok(result);
             })
             .Produces<LogAnalysisResult>(StatusCodes.Status200OK)

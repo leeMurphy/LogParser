@@ -7,9 +7,9 @@ namespace LogParser.Tests
         private readonly ILogParserService service = new LogParserService();
 
         [Fact]
-        public void Analyze_EmptyInput_ReturnsEmptyResult()
+        public async Task Analyze_EmptyInput_ReturnsEmptyResult()
         {
-            var result = service.Analyze(Array.Empty<string>());
+            var result = await service.Analyze(Array.Empty<string>());
 
             Assert.Equal(0, result.UniqueIpCount);
             Assert.Empty(result.TopUrls);
@@ -17,14 +17,14 @@ namespace LogParser.Tests
         }
 
         [Fact]
-        public void Analyze_SingleLogLine_ParsesCorrectly()
+        public async Task Analyze_SingleLogLine_ParsesCorrectly()
         {
             var lines = new[]
             {
                 @"177.71.128.21 - - [10/Jul/2018:22:21:28 +0200] ""GET /home HTTP/1.1"" 200 123"
             };
 
-            var result = service.Analyze(lines);
+            var result = await service.Analyze(lines);
 
             Assert.Equal(1, result.UniqueIpCount);
             Assert.Equal("/home", result.TopUrls.Single());
@@ -32,7 +32,7 @@ namespace LogParser.Tests
         }
 
         [Fact]
-        public void Analyze_MultipleLines_ReturnsTopThree()
+        public async Task Analyze_MultipleLines_ReturnsTopThree()
         {
             var lines = new[]
             {
@@ -42,7 +42,7 @@ namespace LogParser.Tests
                 @"3.3.3.3 - - ""GET /c HTTP/1.1"" 200 1"
             };
 
-            var result = service.Analyze(lines);
+            var result = await service.Analyze(lines);
 
             Assert.Equal(3, result.UniqueIpCount);
             Assert.Equal("/a", result.TopUrls.First());
@@ -50,14 +50,14 @@ namespace LogParser.Tests
         }
 
         [Fact]
-        public void ParseLine_WithTrailingJunk_StillParsesIpAndUrl()
+        public async Task ParseLine_WithTrailingJunk_StillParsesIpAndUrl()
         {
             var lines = new[]
             {
                 @"72.44.32.10 - - [09/Jul/2018:15:48:07 +0200] ""GET / HTTP/1.1"" 200 3574 ""-"" ""UA"" junk extra"
             };
 
-            var result = service.Analyze(lines);
+            var result = await service.Analyze(lines);
 
             Assert.NotNull(result);
             Assert.Equal(1, result.UniqueIpCount);
@@ -66,11 +66,11 @@ namespace LogParser.Tests
         }
 
         [Fact]
-        public void ParseLine_CompletelyInvalid_ReturnsNull()
+        public async Task ParseLine_CompletelyInvalid_ReturnsNull()
         {
             var lines = new[] { "this is not a log line" };
 
-            var result = service.Analyze(lines);
+            var result = await service.Analyze(lines);
 
             Assert.Equal(0, result.UniqueIpCount);
             Assert.Empty(result.TopUrls);

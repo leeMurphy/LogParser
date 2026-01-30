@@ -4,6 +4,6 @@ namespace LogParser.Api.Data
 {
     public interface ILogAnalysisRepository
     {
-        Task<LogAnalysisResult> AnalyzeAsync(IFormFile file);
+        Task<LogAnalysisResult> AnalyzeAsync(IFormFile file, CancellationToken cancellationToken = default);
     }
 }
